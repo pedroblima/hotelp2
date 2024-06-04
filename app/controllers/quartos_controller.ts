@@ -2,7 +2,6 @@ import { HttpContext } from "@adonisjs/core/http";
 import Quarto from "#models/quarto";
 
 export default class QuartosController {
-
     async index({ request }: HttpContext) {
         const page = request.input('page', 1)
         const perPage = request.input('perPage', 10)
