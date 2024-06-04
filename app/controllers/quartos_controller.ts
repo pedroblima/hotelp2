@@ -1,5 +1,6 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Quarto from "#models/quarto";
+import { createQuartoValidator, updateQuartoValidator } from '#validators/quarto'
 
 export default class QuartosController {
     async index({ request }: HttpContext) {
@@ -12,23 +13,26 @@ export default class QuartosController {
         return await Quarto.findOrFail(params.id)
     }
 
-    async store({ request }: HttpContext) {
-        const dados = request.only(['numero_quarto', 'tipo_quarto', 'capacidade', 'status', 'preco_por_noite', 'resort_id'])
-        return await Quarto.create(dados)
+    async store({ request, response }: HttpContext) {
+        const dados = await createQuartoValidator.validate(request.all())
+        const quarto = await Quarto.create(dados)
+        return response.created(quarto)
     }
 
-    async update({ params, request }: HttpContext) {
+    async update({ params, request, response }: HttpContext) {
         const quarto = await Quarto.findOrFail(params.id)
-        const dados = request.only(['numero_quarto', 'tipo_quarto', 'capacidade', 'status', 'preco_por_noite', 'resort_id'])
+        const dados = await updateQuartoValidator.validate(request.all())
         
         quarto.merge(dados)
-        return await quarto.save()
+        await quarto.save()
+        return response.ok(quarto)
     }
 
-    async destroy({ params }: HttpContext) {
+    async destroy({ params, response }: HttpContext) {
         const quarto = await Quarto.findOrFail(params.id)
-
         await quarto.delete()
-        return { msg: 'Quarto deletado com sucesso', quarto }
+        return response.ok({ msg: 'Quarto deletado com sucesso', quarto })
     }
 }
+
+

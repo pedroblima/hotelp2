@@ -1,5 +1,7 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Servico from "#models/servico";
+import { createServicoValidator, updateServicoValidator } from "#validators/servico";
+
 
 export default class ServicosController {
 
@@ -13,18 +15,21 @@ export default class ServicosController {
         return await Servico.findOrFail(params.id)
     }
 
-    async store({ request }: HttpContext) {
-        const dados = request.only(['nome_servico', 'descricao', 'preco', 'resort_id'])
-        return await Servico.create(dados)
+    async store({ request, response }: HttpContext) {
+        const dados = await createServicoValidator.validate(request.all())
+        const servico = await Servico.create(dados)
+        return response.created(servico)
     }
 
-    async update({ params, request }: HttpContext) {
+    async update({ params, request, response }: HttpContext) {
         const servico = await Servico.findOrFail(params.id)
-        const dados = request.only(['nome_servico', 'descricao', 'preco', 'resort_id'])
+        const dados = await updateServicoValidator.validate(request.all())
         
         servico.merge(dados)
-        return await servico.save()
+        await servico.save()
+        return response.ok(servico)
     }
+
 
     async destroy({ params }: HttpContext) {
         const servico = await Servico.findOrFail(params.id)

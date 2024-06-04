@@ -6,11 +6,11 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
-      table.integer('numero_quarto').notNullable()
+      table.string('numero_quarto').notNullable()
       table.string('tipo_quarto').notNullable()
-      table.integer('capacidade').unsigned().notNullable()
+      table.string('capacidade').unsigned().notNullable()
       table.enum('status', ['Disponível', 'Ocupado', 'Limpeza', 'Manutenção']).defaultTo('Disponível')
-      table.float('preco_por_noite').notNullable()
+      table.string('preco_por_noite').notNullable()
       table.integer('resort_id').unsigned().references('resorts.id').onDelete('CASCADE')
 
 

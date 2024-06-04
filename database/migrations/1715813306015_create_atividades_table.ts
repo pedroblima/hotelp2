@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.increments('id').primary()
       table.string('nome_atividade').notNullable()
       table.string('descricao')
-      table.float('preco').notNullable()
+      table.string('preco').notNullable()
       table.integer('resort_id').unsigned().references('resorts.id').onDelete('CASCADE')
 
       table.timestamp('created_at')

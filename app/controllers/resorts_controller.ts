@@ -1,5 +1,6 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Resort from "#models/resort";
+import { createResortValidator, updateResortValidator } from "#validators/resort";
 
 export default class ResortsController {
 
@@ -13,18 +14,21 @@ export default class ResortsController {
         return await Resort.findOrFail(params.id)
     }
 
-    async store({ request }: HttpContext) {
-        const dados = request.only(['nome', 'endereco', 'classificacao', 'numero_quartos', 'taxa_ocupacao', 'taxa_media_por_noite', 'data_abertura'])
-        return await Resort.create(dados)
+    async store({ request, response }: HttpContext) {
+        const dados = await createResortValidator.validate(request.all())
+        const resort = await Resort.create(dados)
+        return response.created(resort)
     }
 
-    async update({ params, request }: HttpContext) {
+    async update({ params, request, response }: HttpContext) {
         const resort = await Resort.findOrFail(params.id)
-        const dados = request.only(['nome', 'endereco', 'classificacao', 'numero_quartos', 'taxa_ocupacao', 'taxa_media_por_noite', 'data_abertura'])
+        const dados = await updateResortValidator.validate(request.all())
         
         resort.merge(dados)
-        return await resort.save()
+        await resort.save()
+        return response.ok(resort)
     }
+
 
     async destroy({ params }: HttpContext) {
         const resort = await Resort.findOrFail(params.id)

@@ -1,5 +1,6 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Funcionario from "#models/funcionario";
+import { createFuncionarioValidator, updateFuncionarioValidator } from "#validators/funcionario";
 
 export default class FuncionariosController {
 
@@ -13,18 +14,21 @@ export default class FuncionariosController {
         return await Funcionario.findOrFail(params.id)
     }
 
-    async store({ request }: HttpContext) {
-        const dados = request.only(['nome', 'cargo', 'salario', 'resort_id'])
-        return await Funcionario.create(dados)
+    async store({ request, response }: HttpContext) {
+        const dados = await createFuncionarioValidator.validate(request.all())
+        const funcionario = await Funcionario.create(dados)
+        return response.created(funcionario)
     }
 
-    async update({ params, request }: HttpContext) {
+    async update({ params, request, response }: HttpContext) {
         const funcionario = await Funcionario.findOrFail(params.id)
-        const dados = request.only(['nome', 'cargo', 'salario', 'resort_id'])
+        const dados = await updateFuncionarioValidator.validate(request.all())
         
         funcionario.merge(dados)
-        return await funcionario.save()
+        await funcionario.save()
+        return response.ok(funcionario)
     }
+
 
     async destroy({ params }: HttpContext) {
         const funcionario = await Funcionario.findOrFail(params.id)
