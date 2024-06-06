@@ -1,6 +1,5 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Quarto from "#models/quarto";
-import { createQuartoValidator, updateQuartoValidator } from '#validators/quarto'
 
 export default class QuartosController {
     async index({ request }: HttpContext) {
@@ -13,19 +12,17 @@ export default class QuartosController {
         return await Quarto.findOrFail(params.id)
     }
 
-    async store({ request, response }: HttpContext) {
-        const dados = await createQuartoValidator.validate(request.all())
-        const quarto = await Quarto.create(dados)
-        return response.created(quarto)
+    async store({ request }: HttpContext) {
+        const dados = request.only(['numero_quarto', 'tipo_quarto', 'capacidade', 'status', 'preco_por_noite', 'resort_id'])
+        return await Quarto.create(dados)
     }
 
-    async update({ params, request, response }: HttpContext) {
+    async update({ params, request }: HttpContext) {
         const quarto = await Quarto.findOrFail(params.id)
-        const dados = await updateQuartoValidator.validate(request.all())
-        
+        const dados = request.only(['numero_quarto', 'tipo_quarto', 'capacidade', 'status', 'preco_por_noite', 'resort_id'])
+
         quarto.merge(dados)
-        await quarto.save()
-        return response.ok(quarto)
+        return await quarto.save()
     }
 
     async destroy({ params, response }: HttpContext) {

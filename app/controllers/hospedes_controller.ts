@@ -1,6 +1,5 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Hospede from "#models/hospede";
-import { createHospedeValidator, updateHospedeValidator } from "#validators/hospede";
 
 export default class HospedesController {
 
@@ -14,19 +13,17 @@ export default class HospedesController {
         return await Hospede.findOrFail(params.id)
     }
 
-    async store({ request, response }: HttpContext) {
-        const dados = await createHospedeValidator.validate(request.all())
-        const hospede = await Hospede.create(dados)
-        return response.created(hospede)
+    async store({ request }: HttpContext) {
+        const dados = request.only(['nome', 'email', 'telefone', 'pais', 'data_check_in', 'data_check_out', 'resort_id'])
+        return await Hospede.create(dados)
     }
 
-    async update({ params, request, response }: HttpContext) {
+    async update({ params, request }: HttpContext) {
         const hospede = await Hospede.findOrFail(params.id)
-        const dados = await updateHospedeValidator.validate(request.all())
-        
+        const dados = request.only(['nome', 'email', 'telefone', 'pais', 'data_check_in', 'data_check_out', 'resort_id'])
+
         hospede.merge(dados)
-        await hospede.save()
-        return response.ok(hospede)
+        return await hospede.save()
     }
 
 

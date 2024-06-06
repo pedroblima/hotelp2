@@ -1,6 +1,5 @@
 import { HttpContext } from "@adonisjs/core/http";
 import Atividade from "#models/atividade";
-import { createAtividadesValidator, updateAtividadesValidator } from "#validators/atividade";
 
 export default class AtividadesController {
 
@@ -14,19 +13,17 @@ export default class AtividadesController {
         return await Atividade.findOrFail(params.id)
     }
 
-    async store({ request, response }: HttpContext) {
-        const dados = await createAtividadesValidator.validate(request.all())
-        const atividade = await Atividade.create(dados)
-        return response.created(atividade)
+    async store({ request }: HttpContext) {
+        const dados = request.only(['nome_atividade', 'descricao', 'preco', 'resort_id'])
+        return await Atividade.create(dados)
     }
 
-    async update({ params, request, response }: HttpContext) {
+    async update({ params, request }: HttpContext) {
         const atividade = await Atividade.findOrFail(params.id)
-        const dados = await updateAtividadesValidator.validate(request.all())
-        
+        const dados = request.only(['nome_atividade', 'descricao', 'preco', 'resort_id'])
+
         atividade.merge(dados)
-        await atividade.save()
-        return response.ok(atividade)
+        return await atividade.save()
     }
 
     async destroy({ params }: HttpContext) {
