@@ -15,6 +15,9 @@ export default class Servico extends BaseModel {
 
   @column()
   declare preco: number
+  
+  @column()
+  declare resort_id: number
 
   @belongsTo(() => Resort)
   declare resort: BelongsTo<typeof Resort>

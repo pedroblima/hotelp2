@@ -25,6 +25,9 @@ export default class Hospede extends BaseModel {
   @column()
   declare dataCheckOut: Date
 
+  @column()
+  declare resort_id: number
+
   @belongsTo(() => Resort)
   declare resort: BelongsTo<typeof Resort>
 

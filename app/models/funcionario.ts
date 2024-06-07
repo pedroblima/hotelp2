@@ -15,6 +15,9 @@ export default class Funcionario extends BaseModel {
 
   @column()
   declare salario: number
+  
+  @column()
+  declare resort_id: number
 
   @belongsTo(() => Resort)
   declare resort: BelongsTo<typeof Resort>

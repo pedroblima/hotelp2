@@ -19,6 +19,9 @@ export default class Quarto extends BaseModel {
   @column()
   declare status: string
 
+  @column()
+  declare resort_id: number
+
   @belongsTo(() => Resort)
   declare resort: BelongsTo<typeof Resort>
 
